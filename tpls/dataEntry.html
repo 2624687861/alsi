@@ -1,0 +1,64 @@
+
+<div class='container fam dataEntry_wrap'>
+	
+	<form class='form-horizontal' name='formSubmitData' method='get' action='phpConSql/dataEntry.php'>
+		
+		<div class='form-group form-group-lg'>
+			<label class='sr-only'>分类选项</label>
+			<select class='form-control' name='data_select' id='data_select' required="required" >
+				<option value='0'>学习</option>
+				<option value='1'>娱乐</option>
+				<option value='2'>动漫</option>
+				<option value='3'>资料</option>
+				<option value='4'>单词</option>
+			</select>
+			<span class='sr-only'>记录分项选项</span>
+		</div>
+		
+		<div class='form-group form-group-lg has-feedback'>
+			<label class='sr-only'>录入内容</label>
+			<div class='input-group'>
+				<span class='input-group-addon font_18'>
+					<i class='glyphicon glyphicon-edit'></i>
+					数据名称
+				</span>
+				<input type='text' class='form-control' ng-model='bill.key' name='data_key' id='data_key' placeholder='录入数据名称' required="required" ng-maxlength='24' />
+				<span ng-hide='formSubmitData.data_key.$pristine||formSubmitData.data_key.$invalid' class='glyphicon glyphicon-ok text-success form-control-feedback dataEntry_icon' aria-hidden='true'></span>
+				<span ng-hide='formSubmitData.data_key.$pristine||formSubmitData.data_key.$valid' class='glyphicon glyphicon-remove text-danger form-control-feedback dataEntry_icon' aria-hidden='true'></span>
+			</div>
+			<!--
+			<div class='error text-muted' ng-hide='formSubmitData.data_key.$pristine' ng-messages='formSubmitData.data_key.$error' >
+				<div ng-message='required'>*这是一个必填项！</div>
+			</div>
+			-->
+		</div>
+		
+		<div class='form-group form-group-lg  has-feedback'>
+			<label class='sr-only'>录入内容</label>
+			<div class='input-group'>
+				<span class='input-group-addon font_18'>
+					<i class='glyphicon glyphicon-check'></i>
+					记入数据
+				</span>
+				<input type='text' class='form-control' ng-model='bill.value' name='data_value' id='data_value' placeholder="录入数据实体" required="required" ng-maxlength='120' />
+				<span ng-hide='formSubmitData.data_value.$pristine||formSubmitData.data_value.$invalid' class='glyphicon glyphicon-ok text-success form-control-feedback dataEntry_icon' aria-hidden='true'></span>
+				<span ng-hide='formSubmitData.data_value.$pristine||formSubmitData.data_value.$valid' class='glyphicon glyphicon-remove text-danger form-control-feedback dataEntry_icon' aria-hidden='true'></span>
+			</div>
+			<!--
+			<div class='error text-muted' ng-hide='formSubmitData.data_value.$pristine' ng-messages='formSubmitData.data_value.$error'>
+				<div ng-message='required'>*这是一个必填项！</div>
+			</div>
+			-->
+		</div>
+		
+		<div class='form-group text-right'>
+			<label class='sr-only'>确认上传</label>
+			<button type='submit' class='btn btn-default btn-lg' ng-disabled='formSubmitData.$invalid'>录入数据</button>
+		</div>
+		
+	</form>
+	
+	
+</div>
+
+

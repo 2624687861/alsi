@@ -1,0 +1,65 @@
+
+@import url("initial.css");
+
+@import url("page.css");
+
+
+/* =========== header =========== */
+.header {
+	z-index: 1000;
+}
+
+/* =========== alsi =========== */
+.alsi_wrap {
+	position: absolute;
+	z-index: 1002;
+}
+.alsi_core {
+	position: absolute;
+	z-index: 3;
+	right: 2%;
+	bottom: 8%;
+}
+.alsi_close {
+	position: absolute;
+}
+.alsi_img {
+	height: 289px;
+	width: 226px;
+}
+.alsi_session {
+	max-height: 160px;
+	min-height: 100px;
+	width: 240px;
+	border-radius: 10px;
+}
+
+/* ============== bg ============== */
+.alsi_modal_bg {
+	position: absolute;
+	background: url(../img/alsi_bg.png);
+	filter: alpha(opacity:30);
+	opacity: .3;
+	z-index: 1001;
+}
+
+
+/* ================= js_style ================= */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

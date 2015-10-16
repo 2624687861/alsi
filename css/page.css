@@ -1,0 +1,37 @@
+
+.wrap {
+	position: fixed;
+	overflow: auto;
+}
+
+/* =========== index ========= */
+.jumb_sight {
+	position: absolute;
+	top: 50px;
+	left: 0px;
+}
+
+/* ============ dataEntry ============ */
+.dataEntry_wrap {
+	margin-top: 50px;
+}
+.dataEntry_icon {
+	font-size: 24px;
+	line-height: 46px;
+}
+
+/* ============== data show ============= */
+
+
+
+/* ========== data remove/up/search ========== */
+.modal-body {
+	counter-reset: upData;
+}
+.operate_updata_model:before {
+	content: counter(upData) '.';
+	counter-increment: upData;
+}
+
+
+

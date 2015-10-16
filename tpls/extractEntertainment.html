@@ -1,0 +1,24 @@
+
+<!-- 数据显示页 -->
+<div class='container'>
+	
+	<div class='row pad_5 font_18' ng-hide='bill.exists'>
+		<section class='col-md-6 col-xs-12 text-muted fam' data-id='{{item.id}}' ng-repeat='item in bill.data' >
+			<aside class='col-xs-6' title='{{item.name}}' >{{item.showName|limitToStr}}</aside>
+			<aside a-division class='col-xs-6' title='{{item.content}}' >
+				<span ng-show='bill.id==4'>{{item.showContent}}</span>
+				<a ng-show='!(bill.id==4)' class='text-muted' target='_blank' ng-href='{{item.content}}'>{{item.showContent|limitToStr:20}}</a>
+			</aside>
+		</section>
+	</div>
+	
+	<div ng-hide='!bill.exists' class='text-warning'>
+		<strong>抱歉还没有任何数据</strong>！
+	</div>
+	
+</div>
+
+
+
+
+
