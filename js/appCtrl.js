@@ -93,6 +93,11 @@ ctrl.controller('dataOperateCtrl',function($scope,HttpData){
 	// 记录当前分类
 	$scope.bill.removeType = 0;
 	
+	// 搜索数据 全选记录
+	$scope.search.selected = false;
+	$scope.search.error = false;
+	$scope.search.onload = false;
+	
 	// 切换大分类
 	$scope.bill.selectTypeStyle = function(i){
 		if($scope.bill.currentModel==i){
@@ -153,7 +158,7 @@ ctrl.controller('dataOperateCtrl',function($scope,HttpData){
 		});
 	}
 	
-	// 挂监听
+	// 挂监听 删除 更新类
 	$scope.$watch('bill.remove_model',function(n,o,scope){
 		$scope.bill.remove_model = n;
 	});
@@ -166,6 +171,8 @@ ctrl.controller('dataOperateCtrl',function($scope,HttpData){
 	$scope.$watch('bill.removeLength',function(n,o,scope){
 		$scope.bill.removeLength = n;
 	});
+	// 监听 搜索类
+	
 	
 });
 // 记录选中
@@ -363,10 +370,183 @@ ctrl.directive('updataAjax',function(){
 		}
 	}
 });
-
-
-
-
+// 搜索 数据库 全选
+ctrl.directive('searchClickdata',function(){
+	return {
+		restrict: 'A',
+		link: function(scope,ele,attrs){
+			jQuery(ele[0]).on('click',function(){
+				var _this = jQuery(ele[0]).get(0);
+				var aSearch = jQuery('.search_clickdata').get();
+				if(_this.checked){
+					for(var i=0;i<aSearch.length;i++){
+						aSearch[i].checked = true;
+					}
+					scope.search.selected = true;
+				}else{
+					for(var i=0;i<aSearch.length;i++){
+						aSearch[i].checked = false;
+					}
+					scope.search.selected = false;
+				}
+				scope.$apply('scope.search.selected');
+			});
+		}
+	}
+});
+// 搜索 单个 选中
+ctrl.directive('searchClickitem',function(){
+	return {
+		restrict: 'A',
+		link: function(scope,ele,attrs){
+			jQuery(ele[0]).on('click',function(){
+				var _this = jQuery(ele[0]).get(0);
+				if(_this.checked){
+					var aSearch = jQuery('.search_clickdata').get();
+					for(var i=0;i<aSearch.length;i++){
+						if(!aSearch[i].checked){
+							return '';
+						}
+					}
+					// 如果所有的判定都为真的情况下 执行. 否则打断.
+					var oDataBase = jQuery('.search_clickitem').get(0);
+					oDataBase.checked = true;
+					scope.search.selected = true;
+					scope.$apply('scope.search.selected');
+				}else{
+					if(scope.search.selected){
+						var oDataBase = jQuery('.search_clickitem').get(0);
+						oDataBase.checked = false;
+						scope.search.selected = false;
+						scope.$apply('scope.search.selected');
+					}
+				}
+			});
+		}
+	}
+});
+// 点击搜索
+ctrl.directive('searchClickbtn',function(){
+	return {
+		restrict: 'A',
+		link: function(scope,ele,attrs){
+			jQuery(ele[0]).on('click',function(){
+				if(scope.search.onload){
+					return '';
+				}
+				var oValue = jQuery('.search_keyword');
+				if(!oValue.val()){
+					fnSearchValidate('请输入搜索相关');
+					return '';
+				}
+				var reg = /[<>\*\|\/\?\:\"\"\;\'\'\-\+\~\!\@\#\$\%\^\&\*\(\)\}\{\]\[\,]/gi;
+				if(reg.test(oValue.val())){
+					fnSearchValidate('所输入的格式有误,请勿包含<>~!@#$%^&*()_+{}|[]\/等非法字符');
+					return '';
+				}
+				var arr = [];
+				if(!scope.search.selected){
+					var aSearch = jQuery('.search_clickdata').get();
+					var bSelect = false;
+					for(var i=0;i<aSearch.length;i++){
+						if(aSearch[i].checked){
+							bSelect = true;
+							arr.push(i);
+						}
+					}
+					if(!bSelect){
+						fnSearchValidate('请选择搜索范围');
+						return '';
+					}
+				}
+				
+				// 获取参数
+				if(scope.search.selected){
+					var searchArea = 9;   // 数据库
+				}else{
+					var searchArea = arr.join(','); //0:学习,1:娱乐,2:动漫,3:资料,4:单词
+				}
+				var url = 'phpConSql/searchDataHandler.php',
+					json = {
+						'searchArea': searchArea,
+						'searchValue': oValue.val(),
+					};
+				
+				// 成功后修改 scope 的值
+				scope.service.getAnsycData(url,json)
+				.done(function(res,status,xhr){
+					var f = JSON.parse(res);
+					if(f.flag){
+						
+						// 实际获取数据之后 切换显示.
+						alert('OK');
+						
+						fnSearchGoBack();
+						scope.search.onload = false;
+						scope.$apply('scope.search.onload');
+					}else{
+						alert('抱歉,网路繁忙,请稍后再试.');
+					}
+				})
+				.fail(function(xhr,errorText,errorStatus){
+					console.log(errorText,errorStatus);
+				});
+				
+				// 所有的return都没有执行,则执行.
+				fnSearchValidate('加载数据中，请稍等……');
+				scope.search.onload = true;
+				scope.$apply('scope.search.onload');
+				
+			});
+			// 判定执行封装 出错
+			function fnSearchValidate(str){
+				var oTitle = jQuery('.search_error_title'),
+					oError = jQuery('.search_error');
+				oTitle.text(str);
+				oError.stop().animate({
+					'left': '0px',
+					'opacity': '1',
+					'filter': 'alpha(opacity: 100)',
+				});
+				scope.search.error = true;
+				scope.$apply('scope.search.error');
+			}
+			// 判定执行封装 归位
+			function fnSearchGoBack(){
+				var oError = jQuery('.search_error');
+				oError.stop().animate({
+					'left': '-200px',
+					'opacity': '0',
+					'filter': 'alpha(opacity: 0)',
+				});
+				scope.search.error = false;
+				scope.$apply('scope.search.error');
+			}
+		}
+	}
+});
+// 用户输入
+ctrl.directive('searchKeyword',function(){
+	return {
+		restrict: 'A',
+		link: function(scope,ele,attrs){
+			jQuery(ele[0]).on('focus',function(){
+				if(scope.search.onload){
+					return '';
+				}
+				if(scope.search.error){
+					jQuery('.search_error').stop().animate({
+						'left': '-100px',
+						'opacity': '0',
+						'filter': 'alpha(opacity: 0)',
+					});
+					scope.search.error = false;
+					scope.$apply('scope.search.error');
+				}
+			});
+		}
+	}
+});
 
 
 

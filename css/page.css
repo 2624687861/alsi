@@ -33,5 +33,20 @@
 	counter-increment: upData;
 }
 
+.search_error {
+	position: absolute;
+	left: -200px;
+	filter: alpha(opacity: 0);
+	opacity: 0;
+}
+
+.search_show_result {
+	
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+
+
 
 

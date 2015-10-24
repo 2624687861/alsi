@@ -33,7 +33,13 @@
 			}
 			return $dataBase;
 		}
-		
+		// 获取当前时间
+		function sqlGetCurrentTime(){
+			$time = time();
+			date_default_timezone_set('Asia/Shanghai');
+			$time = date('Y-m-d H:m:s');
+			return $time;
+		}
 		
 	}
 	

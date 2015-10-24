@@ -93,41 +93,42 @@
 	<!-- searchData -->
 	<div ng-hide='search.hide'>
 		<h2 class='font_w_b c_blank_1 t_shadow_1'>搜索数据</h2>
-		<form class='form-horizontal col-md-10 col-md-offset-1 col-xs-12'>
+		<!-- 搜索表单 -->
+		<form class='form-horizontal col-md-10 col-md-offset-1 col-xs-12' ng-hide='true'>
 			
 			<div class='checkbox'>
 				<label class='font_18'>
-					<input type='checkbox' value='database' />
+					<input type='checkbox' value='database' class='search_clickitem' search-clickdata />
 					<span class='text-muted h_hover a_cursor'>数据库</span>
 				</label>
 			</div>
 			<div class='checkbox dis_in_bl pad_r_5'>
 				<label class='font_18'>
-					<input type='checkbox' value='studing' />
+					<input type='checkbox' value='studing' class='search_clickdata' search-clickitem />
 					<span class='text-muted h_hover a_cursor'>学习</span>
 				</label>
 			</div>
 			<div class='checkbox dis_in_bl pad_lr_5'>
 				<label class='font_18'>
-					<input type='checkbox' value='entertainment' />
+					<input type='checkbox' value='entertainment' class='search_clickdata' search-clickitem />
 					<span class='text-muted h_hover a_cursor'>娱乐</span>
 				</label>
 			</div>
 			<div class='checkbox dis_in_bl pad_lr_5'>
 				<label class='font_18'>
-					<input type='checkbox' value='animation' />
+					<input type='checkbox' value='animation' class='search_clickdata' search-clickitem />
 					<span class='text-muted h_hover a_cursor'>动漫</span>
 				</label>
 			</div>
 			<div class='checkbox dis_in_bl pad_lr_5'>
 				<label class='font_18'>
-					<input type='checkbox' value='means' />
+					<input type='checkbox' value='means' class='search_clickdata' search-clickitem />
 					<span class='text-muted h_hover a_cursor'>资料</span>
 				</label>
 			</div>
 			<div class='checkbox dis_in_bl pad_lr_5'>
 				<label class='font_18'>
-					<input type='checkbox' value='word' />
+					<input type='checkbox' value='word' class='search_clickdata' search-clickitem />
 					<span class='text-muted h_hover a_cursor'>单词</span>
 				</label>
 			</div>
@@ -140,13 +141,38 @@
 					<span class='input-group-addon font_18'>
 						<i  class='glyphicon glyphicon-search' aria-hidden='true'></i>
 					</span>
-					<input class='form-control' type='search' placeholder='请输入关键字' />
+					<input class='form-control search_keyword' search-keyword type='search' maxlength='24' placeholder='请输入关键字' />
 					<span class='input-group-addon font_18'>
-						<a href='javascript:void(0);' class='text-muted fam'>点击搜索</a>
+						<a href='javascript:void(0);' class='text-muted fam' search-clickbtn>点击搜索</a>
 					</span>
 				</section>
 			</div>
+			<p class='fam text-danger search_error'>
+				<span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>
+				<span class='search_error_title'></span>
+			</p>
 		</form>
+	
+		<!-- 搜索结果显示 -->
+		<div class='row text-left text-muted fam font_16'>
+			<div class='col-xs-10 col-xs-offset-1 search_show_result font_18'>
+				<div class='col-md-3 col-xs-6'>数据名称</div>
+				<div class='col-md-5 col-xs-6'>数据内容</div>
+				<div class='col-md-2 hidden-xs hidden-sm'>数据类型</div>
+				<div class='col-md-2 hidden-xs hidden-sm'>创建时间</div>
+			</div>
+			<!-- 空层 -->
+			<div style='width:100%;height: 40px;'></div>
+			<!-- 模板 -->
+			<div class='col-xs-10 col-xs-offset-1 search_show_result'>
+				<div class='col-md-3 col-xs-6'>搜素结果名称</div>
+				<div class='col-md-5 col-xs-6'>搜素结果数据</div>
+				<div class='col-md-2 hidden-xs hidden-sm'>搜索数据类型</div>
+				<div class='col-md-2 hidden-xs hidden-sm'>搜索数据时间</div>
+			</div>
+			
+		</div>
+		
 	</div>
 	
 </div>
