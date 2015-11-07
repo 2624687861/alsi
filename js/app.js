@@ -9,6 +9,10 @@ app.config(function($routeProvider){
 		templateUrl: 'tpls/index.html',
 		controller: 'indexCtrl'
 		
+	}).when('/present',{
+		
+		templateUrl: 'tpls/present.html',
+		
 	}).when('/dataEntry',{
 		
 		templateUrl: 'tpls/dataEntry.html',
@@ -23,6 +27,11 @@ app.config(function($routeProvider){
 		
 		templateUrl: 'tpls/dataOperate.php',
 		controller: 'dataOperateCtrl'
+		
+	}).when('/searchResult',{
+		
+		templateUrl: 'tpls/searchResult.html',
+		controller: 'searchResultCtrl'
 		
 	}).otherwise({
 		
@@ -79,6 +88,8 @@ app.factory('HttpData',function($http){
 	httpData.removeData = null;
 	//httpData.getLocalhostData('.operate_data');
 	
+	// 储存空间 用于给search result 使用
+	httpData.searchResult = null;
 	
 	return httpData;
 	
@@ -87,13 +98,20 @@ app.factory('HttpData',function($http){
 // 过滤器 字符限制
 app.filter('limitToStr',function(){
 	return function(input,val){
-		if(val){
+		if(input.length>val){
 			var input = input.substr(0,val)+'……';
 		}
 		return input;
 	}
 });
-
+app.filter('limitToStr2',function(){
+	return function(input,val){
+		if(input.length>val){
+			var input = input.substr(0,val);
+		}
+		return input;
+	}
+});
 
 
 

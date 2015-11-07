@@ -3,7 +3,52 @@
 var ctrl = angular.module('appCtrl',[]); 
 
 // index
-ctrl.controller('indexCtrl',function($scope){
+ctrl.controller('indexCtrl',function($scope,HttpData){
+	
+	$scope.bill = {};
+	$scope.bill.searchData = null;
+	$scope.bill.searchWarning = null;
+	
+	$scope.service = HttpData;
+	// 重写 alert
+	window.alert = function(str){
+		if(str){
+			$scope.bill.searchWarning = str;
+			jQuery('.alert').slideDown();
+			return '';
+		}
+		jQuery('.alert').slideUp();
+	}
+	
+	$scope.submitSearchData = function(){
+		var a = $scope.bill.searchData;
+		if(!a){
+			alert('不可为空');
+			return '';
+		}
+		var url = 'phpConSql/searchDataHandler.php';
+		var json = {
+			'searchArea': 9,
+			'searchValue': a,
+		};
+		this.service.getAnsycData(url,json)
+		.done(function(res,status,xhr){
+			var f = JSON.parse(res)
+			if(f.flag==1){
+				$scope.service.searchResult = f.data_array;
+				window.location.href = '#/searchResult';
+			}else{
+				alert('抱歉,服务器繁忙,请稍后再试!');
+			}
+		})
+		.fail(function(xhr,errorTxt,errorStatus){
+			alert('抱歉,数据库出错!');
+			console.log(xhr,errorTxt,errorStatus);
+		});
+	}
+	$scope.focusSearchData = function(){
+		alert();
+	}
 	
 });
 
@@ -158,6 +203,24 @@ ctrl.controller('dataOperateCtrl',function($scope,HttpData){
 		});
 	}
 	
+	// 数字与类型
+	$scope.search.numType = function(a){
+		var sNumType = '';
+		switch(a){
+			case '0': sNumType = '学习';
+			break;
+			case '1': sNumType = '娱乐';
+			break;
+			case '2': sNumType = '动漫';
+			break;
+			case '3': sNumType = '资料';
+			break;
+			case '4': sNumType = '单词';
+			break;
+		}
+		return sNumType;
+	}
+	
 	// 挂监听 删除 更新类
 	$scope.$watch('bill.remove_model',function(n,o,scope){
 		$scope.bill.remove_model = n;
@@ -171,383 +234,61 @@ ctrl.controller('dataOperateCtrl',function($scope,HttpData){
 	$scope.$watch('bill.removeLength',function(n,o,scope){
 		$scope.bill.removeLength = n;
 	});
-	// 监听 搜索类
-	
 	
 });
-// 记录选中
-ctrl.directive('clickSelect',function(){
-	return {
-		restrict: 'A',
-		link: function(scope,ele,attrs){
-			jQuery(ele[0]).on('click',function(){
-				var _this = jQuery(this);
-				
-				if(_this.prop('checked')){
-					_this.parent().attr('data-label-remove',true);
-					scope.bill.removeLength++;
-				}else{
-					_this.parent().removeAttr('data-label-remove');
-					scope.bill.removeLength--;
-				}
-				
-				scope.$apply();
-			});
-		}
-	}
-});
-// 提交数据
-ctrl.directive('clickRemove',function(){
-	return {
-		restrict: 'A',
-		link: function(scope,ele,attrs){
-			jQuery(ele[0]).on('click',function(){
 
-				if(scope.bill.removeLength){
-					
-					var bConfirm = window.confirm('确认删除');
-					
-					if(!bConfirm){
-						return '';
-					}
-					
-					var aRemove = jQuery('[data-label-remove]');
-					var str = '';
-					var aStr = [];
-					for(var i=0;i<aRemove.length;i++){
-						var a = aRemove.eq(i);
-						if(!str){
-							str += a.attr('data-id');
-							aStr.push(a.attr('data-id'));
-							continue;
-						}
-						str += (',' + a.attr('data-id'));
-						aStr.push(a.attr('data-id'));
-					}
-
-					var url = 'phpConSql/removeDataRows.php';
-					var json = {
-						'deleteStr': str,
-						'data_select': scope.bill.removeType
-					};
-					// 删除实际操作
-					scope.service.getAnsycData(url,json)
-					.done(function(res,status,xhr){
-						if(res==1){
-							// 数据模型的刷新 
-							var aModel = scope.bill.remove_model;
-							for(var i=0;i<aModel.length;i++){
-								var oModel = aModel[i].id;
-								for(var j=0;j<aStr.length;j++){
-									var oStr = aStr[j];
-									if(oStr == oModel){
-										scope.bill.remove_model.splice(i,1);
-										// 清空一开始 php 传入的数据
-										if(!scope.bill.removeType){
-											jQuery('.operate_data').eq(i).remove();
-										}
-										break;
-									}
-								}
-							}
-							scope.$apply('bill.remove_model');
-						}else{
-							alert('抱歉,服务器出错！');
-							console.log(res);
-						}
-					})
-					.fail(function(xhr,errorTxt,errorStatus){
-						alert('抱歉,数据库出错!');
-						console.log(xhr,errorTxt,errorStatus);
-					});
-					
+// search result
+ctrl.controller('searchResultCtrl',function($scope,HttpData){
+	
+	$scope.service = HttpData;
+	
+	$scope.search = {};
+	
+	$scope.search.dataResult = $scope.service.searchResult;
+	
+	// 是否查询到结果.
+	$scope.search.hide = null;
+	$scope.search.hide = $scope.search.dataResult&&$scope.search.dataResult.length?true:false;
+	
+	// 更新 搜索结果 数据
+	$scope.search.upData_model = null;
+	$scope.searchShow = function(oItem){
+		$scope.search.upData_model = [];
+		$scope.search.upData_model.push(oItem);
+	}
+	
+	// 删除 搜索结果 数据
+	$scope.searchRemove = function(index,oItem){
+		var bConfirm = confirm('确认删除?');
+		if(bConfirm){
+			var url = 'phpConSql/removeDataRows.php';
+			var json = {'deleteStr':oItem.id,'data_select':oItem.type};
+			$scope.service.getAnsycData(url,json)
+			.done(function(res,status,xhr){
+				var f = JSON.parse(res);
+				if(f==1){
+					alert('删除成功!');
+					$scope.search.dataResult.splice(index,1);
+					$scope.$apply('scope.search.dataResult');
+				}else if(f==2){
+					alert('抱歉，服务器繁忙，请稍后再试！');
 				}else{
-					alert('请选择需要删除项!');
+					alert('服务器挂了！');
 				}
-				
+			})
+			.fail(function(xhr,errorTxt,errorStatus){
+				alert('抱歉,数据库出错!');
+				console.log(xhr,errorTxt,errorStatus);
 			});
 		}
 	}
+	
+	// 挂监听
+	$scope.$watch('search.dataResult',function(n,o,scope){
+		$scope.search.dataResult = n;
+	});
+	
 });
-// 更新数据 进更新层
-ctrl.directive('clickUpdata',function(){
-	return {
-		restrict: 'A',
-		link: function(scope,ele,attrs){
-			jQuery(ele[0]).on('click',function(e){
-				if(scope.bill.removeLength){
-					var aRemove = jQuery('[data-label-remove]');
-					var arr = [];
-					for(var i=0;i<aRemove.length;i++){
-						var obj1 = {};
-						var a = aRemove.eq(i).children('span');
-						obj1.id = aRemove.eq(i).attr('data-id');
-						obj1.index = aRemove.eq(i).attr('data-index');
-						obj1.name = a.text();
-						obj1.content = a.attr('title');
-						arr.push(obj1);
-					}
-					// 更新 更新模型
-					scope.bill.upData_model = arr;
-					scope.$apply('bill.upData_model');
-					
-				}else{
-					alert('请选择更新项!');
-					e.preventDefault();
-					return false;
-				}
-			});
-		}
-	}
-});
-// 提交更新数据
-ctrl.directive('updataAjax',function(){
-	return {
-		restrict: 'A',
-		link: function(scope,ele,attrs){
-			jQuery(ele[0]).on('click',function(){
-				
-				var url = 'phpConSql/upData.php';
-				//var json = angular.toJson(scope.bill.upData_model);
-				var a = scope.bill.upData_model;
-				var arr = [];
-				var aIndex = [];
-				for(var i in a){
-					var str = '';
-					var b = a[i];
-					// 为空情况判定
-					if(!b.name||!b.content){
-						alert('抱歉！数据不可为空！');
-						return '';
-					}
-					str = b.id+','+b.name+','+b.content;
-					arr.push(str);
-					// 记录传递的各个节点索引
-					aIndex.push(b.index);
-				}
-				var json = {
-					'upData': arr,
-					'data_select': scope.bill.removeType
-				}
-				
-				scope.service.postAnsycData(url,json)
-				.done(function(res,status,xhr){
-					
-					if(res){
-						// 节点更新
-						var aRemove = jQuery('[data-label-remove]');
-						for(var i in aRemove){
-							var a = aRemove.eq(i);
-							a.removeAttr('data-label-remove')
-							.children('input').removeAttr('checked');
-						}
-						alert('修改成功!');
-						// 模型同步 数据更新
-						for(var i=0;i<aIndex.length;i++){
-							// 主模型中记录的第0个[3,4,5] = 更新模型的第0个 [0,1,2] 数据选中与节点选中的数据更替
-							scope.bill.remove_model[aIndex[i]].name = scope.bill.upData_model[i].name;
-							scope.bill.remove_model[aIndex[i]].content = scope.bill.upData_model[i].content;
-						}
-						// 清空 更新模型  清空记录数量
-						scope.bill.upData_model = null;
-						scope.bill.removeLength = 0;
-						scope.$apply();
-						
-					}else if(res==-1){
-						alert('抱歉，服务器繁忙，请稍后再试！');
-					}else{
-						alert('服务器挂了！');
-						console.log(res);
-					}
-				})
-				.fail(function(xhr,errorTxt,errorStatus){
-					alert('抱歉,数据库出错!');
-					console.log(xhr,errorTxt,errorStatus);
-				});
-				
-				jQuery('.close').trigger('click');
-			});
-		}
-	}
-});
-// 搜索 数据库 全选
-ctrl.directive('searchClickdata',function(){
-	return {
-		restrict: 'A',
-		link: function(scope,ele,attrs){
-			jQuery(ele[0]).on('click',function(){
-				var _this = jQuery(ele[0]).get(0);
-				var aSearch = jQuery('.search_clickdata').get();
-				if(_this.checked){
-					for(var i=0;i<aSearch.length;i++){
-						aSearch[i].checked = true;
-					}
-					scope.search.selected = true;
-				}else{
-					for(var i=0;i<aSearch.length;i++){
-						aSearch[i].checked = false;
-					}
-					scope.search.selected = false;
-				}
-				scope.$apply('scope.search.selected');
-			});
-		}
-	}
-});
-// 搜索 单个 选中
-ctrl.directive('searchClickitem',function(){
-	return {
-		restrict: 'A',
-		link: function(scope,ele,attrs){
-			jQuery(ele[0]).on('click',function(){
-				var _this = jQuery(ele[0]).get(0);
-				if(_this.checked){
-					var aSearch = jQuery('.search_clickdata').get();
-					for(var i=0;i<aSearch.length;i++){
-						if(!aSearch[i].checked){
-							return '';
-						}
-					}
-					// 如果所有的判定都为真的情况下 执行. 否则打断.
-					var oDataBase = jQuery('.search_clickitem').get(0);
-					oDataBase.checked = true;
-					scope.search.selected = true;
-					scope.$apply('scope.search.selected');
-				}else{
-					if(scope.search.selected){
-						var oDataBase = jQuery('.search_clickitem').get(0);
-						oDataBase.checked = false;
-						scope.search.selected = false;
-						scope.$apply('scope.search.selected');
-					}
-				}
-			});
-		}
-	}
-});
-// 点击搜索
-ctrl.directive('searchClickbtn',function(){
-	return {
-		restrict: 'A',
-		link: function(scope,ele,attrs){
-			jQuery(ele[0]).on('click',function(){
-				if(scope.search.onload){
-					return '';
-				}
-				var oValue = jQuery('.search_keyword');
-				if(!oValue.val()){
-					fnSearchValidate('请输入搜索相关');
-					return '';
-				}
-				var reg = /[<>\*\|\/\?\:\"\"\;\'\'\-\+\~\!\@\#\$\%\^\&\*\(\)\}\{\]\[\,]/gi;
-				if(reg.test(oValue.val())){
-					fnSearchValidate('所输入的格式有误,请勿包含<>~!@#$%^&*()_+{}|[]\/等非法字符');
-					return '';
-				}
-				var arr = [];
-				if(!scope.search.selected){
-					var aSearch = jQuery('.search_clickdata').get();
-					var bSelect = false;
-					for(var i=0;i<aSearch.length;i++){
-						if(aSearch[i].checked){
-							bSelect = true;
-							arr.push(i);
-						}
-					}
-					if(!bSelect){
-						fnSearchValidate('请选择搜索范围');
-						return '';
-					}
-				}
-				
-				// 获取参数
-				if(scope.search.selected){
-					var searchArea = 9;   // 数据库
-				}else{
-					var searchArea = arr.join(','); //0:学习,1:娱乐,2:动漫,3:资料,4:单词
-				}
-				var url = 'phpConSql/searchDataHandler.php',
-					json = {
-						'searchArea': searchArea,
-						'searchValue': oValue.val(),
-					};
-				
-				// 成功后修改 scope 的值
-				scope.service.getAnsycData(url,json)
-				.done(function(res,status,xhr){
-					var f = JSON.parse(res);
-					if(f.flag){
-						
-						// 实际获取数据之后 切换显示.
-						alert('OK');
-						
-						fnSearchGoBack();
-						scope.search.onload = false;
-						scope.$apply('scope.search.onload');
-					}else{
-						alert('抱歉,网路繁忙,请稍后再试.');
-					}
-				})
-				.fail(function(xhr,errorText,errorStatus){
-					console.log(errorText,errorStatus);
-				});
-				
-				// 所有的return都没有执行,则执行.
-				fnSearchValidate('加载数据中，请稍等……');
-				scope.search.onload = true;
-				scope.$apply('scope.search.onload');
-				
-			});
-			// 判定执行封装 出错
-			function fnSearchValidate(str){
-				var oTitle = jQuery('.search_error_title'),
-					oError = jQuery('.search_error');
-				oTitle.text(str);
-				oError.stop().animate({
-					'left': '0px',
-					'opacity': '1',
-					'filter': 'alpha(opacity: 100)',
-				});
-				scope.search.error = true;
-				scope.$apply('scope.search.error');
-			}
-			// 判定执行封装 归位
-			function fnSearchGoBack(){
-				var oError = jQuery('.search_error');
-				oError.stop().animate({
-					'left': '-200px',
-					'opacity': '0',
-					'filter': 'alpha(opacity: 0)',
-				});
-				scope.search.error = false;
-				scope.$apply('scope.search.error');
-			}
-		}
-	}
-});
-// 用户输入
-ctrl.directive('searchKeyword',function(){
-	return {
-		restrict: 'A',
-		link: function(scope,ele,attrs){
-			jQuery(ele[0]).on('focus',function(){
-				if(scope.search.onload){
-					return '';
-				}
-				if(scope.search.error){
-					jQuery('.search_error').stop().animate({
-						'left': '-100px',
-						'opacity': '0',
-						'filter': 'alpha(opacity: 0)',
-					});
-					scope.search.error = false;
-					scope.$apply('scope.search.error');
-				}
-			});
-		}
-	}
-});
-
 
 
 

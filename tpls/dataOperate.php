@@ -1,13 +1,9 @@
 <?php
 	
-	$link = mysql_connect('localhost','root','zydxiana');
-	if(!$link){
-		echo '请检查网络是否正常连接！';
-	}
-	mysql_query('set names utf8');
-	mysql_select_db('alsi');
+	require_once('../tool/openSql.class.php');
 	
-	$select_studing = mysql_query('select * from studing');
+	$sql = new SQL();
+	$select_studing = $sql->sqlDql('select * from studing');
 	
 	while($a = mysql_fetch_array($select_studing)){
 		$b = array();
@@ -18,7 +14,7 @@
 		echo '<div class="operate_data" data-id='.$b['id'].' data-name='.$b['name'].' data-content='.$b['content'].'></div>';
 	}
 	
-	mysql_close($link);
+	mysql_close();
 	
 ?>	
 
@@ -92,9 +88,10 @@
 	
 	<!-- searchData -->
 	<div ng-hide='search.hide'>
+
 		<h2 class='font_w_b c_blank_1 t_shadow_1'>搜索数据</h2>
 		<!-- 搜索表单 -->
-		<form class='form-horizontal col-md-10 col-md-offset-1 col-xs-12' ng-hide='true'>
+		<form class='form-horizontal col-md-10 col-md-offset-1 col-xs-12'>
 			
 			<div class='checkbox'>
 				<label class='font_18'>
@@ -152,26 +149,6 @@
 				<span class='search_error_title'></span>
 			</p>
 		</form>
-	
-		<!-- 搜索结果显示 -->
-		<div class='row text-left text-muted fam font_16'>
-			<div class='col-xs-10 col-xs-offset-1 search_show_result font_18'>
-				<div class='col-md-3 col-xs-6'>数据名称</div>
-				<div class='col-md-5 col-xs-6'>数据内容</div>
-				<div class='col-md-2 hidden-xs hidden-sm'>数据类型</div>
-				<div class='col-md-2 hidden-xs hidden-sm'>创建时间</div>
-			</div>
-			<!-- 空层 -->
-			<div style='width:100%;height: 40px;'></div>
-			<!-- 模板 -->
-			<div class='col-xs-10 col-xs-offset-1 search_show_result'>
-				<div class='col-md-3 col-xs-6'>搜素结果名称</div>
-				<div class='col-md-5 col-xs-6'>搜素结果数据</div>
-				<div class='col-md-2 hidden-xs hidden-sm'>搜索数据类型</div>
-				<div class='col-md-2 hidden-xs hidden-sm'>搜索数据时间</div>
-			</div>
-			
-		</div>
 		
 	</div>
 	
@@ -188,9 +165,9 @@
         <h4 class="modal-title" id="myModalLabel">UpData</h4>
       </div>
       <div class="modal-body">
-      	<!-- 更新模板 --><!-- 缺少效验过程 -->
+      	<!-- 更新模板 -->
       	<section class='operate_updata_model' ng-repeat='item in bill.upData_model'>
-      		<div class='form-group has-feedback'>
+      		<div class='form-group'>
 	       		<label class='sr-only'>数据名</label>
 	       		<input type='text' ng-model='item.name' required="required" maxlength="24" class='form-control' />
 	       	</div>
@@ -207,6 +184,8 @@
     </div>
   </div>
 </div>
+
+
 
 
 

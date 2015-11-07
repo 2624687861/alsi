@@ -6,51 +6,45 @@
 	</head>
 	<body>
 		<?php
+		
+			require_once('../tool/openSql.class.php');
 			
-			$select = $_GET['data_select'];	
-			$key = $_GET['data_key'];
-			$value = $_GET['data_value'];
-			
-			$dataBase = null;
-			switch($select){
-				case 0: $dataBase = 'studing';
-				break;
-				case 1: $dataBase = 'entertainment';
-				break;
-				case 2: $dataBase = 'animation';
-				break;
-				case 3: $dataBase = 'means';
-				break;
-				case 4: $dataBase = 'word';
-				break;
+			if(isset($_GET['data_select']) && isset($_GET['data_key']) && isset($_GET['data_value'])){
+				$select = $_GET['data_select'];	
+				$key = $_GET['data_key'];
+				$value = $_GET['data_value'];
+			}else{
+				die('<script>document.write("传输数据方式非法.");</script>;');
 			}
 			
-			// 打开数据库连接
-			$link = mysql_connect('localhost', 'root', 'zydxiana');
-			if(!$link){
-				echo '抱歉请检查网络是否可用！';
-				return '';
-			}
+			$sql = new SQL();
 			
-			// 设置 字符编码
-			mysql_query('set names utf8');
-			
-			// 选择数据库
-			mysql_select_db('alsi',$link);
-			
+			// 记录当前日期
+			$time = $sql->sqlGetCurrentTime();
+			$dataBase = $sql->sqlDivisionTable($select);
 			// 编辑执行语句
-			$statement = "insert into ".$dataBase."(dataName,DataContent)"."values('".$key."','".$value."')";
+			$statement = "insert into ".$dataBase."(dataName,dataContent,dataDate)"."values('".$key."','".$value."','".$time."')";
 	
-			// 实际解析执行
-			mysql_query($statement);
-			
+			$retrun_result = $sql->sqlDml($statement);
 			// 关闭数据库连接
-			mysql_close($link);
+			$sql->sqlClose();
 			
 		?>	
 		
+		<h1>
+			<?php 
+				switch($retrun_result){
+					case 0: echo '录入数据失败,';
+					break;
+					case 1: echo '数据录入中,';
+					break;
+					case 2: echo '服务器忙碌中,请稍后录入数据,';
+					break;
+				}
+			 ?>
+			<span id='show'>5秒后回到首页 </span>
+		</h1>
 		
-		<h1 id='show'>数据录入中,5秒后回到首页 </h1>
 		
 		<script>
 			
@@ -67,7 +61,7 @@
 				var num = 5;
 				var second = num - count;
 				
-				oShow.innerHTML = "数据录入中,"+second+"秒后回到首页";
+				oShow.innerHTML = second+"秒后回到首页";
 				
 				setTimeout(arguments.callee,1000);
 				

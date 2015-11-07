@@ -1,22 +1,22 @@
 <?php
 	
-	$data_select = $_GET['data_select'];
-	
+	if(isset($_GET['data_select'])){
+		$data_select = $_GET['data_select'];
+	}else{
+		die('<script>document.write("传输数据方式非法.");</script>;');
+	}
+
 	require_once('../tool/openSql.class.php');
 	
 	// sql 对象
 	$sql = new SQL();
-	// 数据库句柄
-	$link = $sql->sqlConnect();
-	// 选取数据库
-	$sql->sqlSelectDB('alsi',$link);
 	// 分类过滤
 	$dataBase = $sql->sqlDivisionTable($data_select);
 	
 	// 实际操作
 	$sql_expressment = 'select * from '.$dataBase;
 	// 返回影响数据表行数
-	$result = mysql_query($sql_expressment);
+	$result = $sql->sqlDql($sql_expressment);
 	
 	$rows = mysql_affected_rows();
 	
@@ -39,7 +39,7 @@
 	
 	echo $json;
 	
-	$sql->sqlClose($link);
+	$sql->sqlClose();
 	
 	
 ?>	

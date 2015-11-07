@@ -1,35 +1,22 @@
 <?php
 	// 只有当 php 当作页面使用时 才 添加 <meta charset='utf-8'/> 或者添加头信息.
-	$data_select = $_GET['data_select'];
-	
-	$dataBase = null;
-	switch($data_select){
-				case 0: $dataBase = 'studing';
-				break;
-				case 1: $dataBase = 'entertainment';
-				break;
-				case 2: $dataBase = 'animation';
-				break;
-				case 3: $dataBase = 'means';
-				break;
-				case 4: $dataBase = 'word';
-				break;
-			}
-	
-	$link = mysql_connect('localhost','root','zydxiana');
-	if(!$link){
-		echo '请检查网络是否正常连接！';
+	if(isset($_GET['data_select'])){
+		$data_select = $_GET['data_select'];
+	}else{
+		die('<script>document.write("传输数据方式非法.");</script>;');
 	}
 	
-	mysql_query('set names utf8');
-	mysql_select_db('alsi',$link);
+	require_once('../tool/openSql.class.php');
+	$sql = new SQL();
+	
+	$dataBase = $sql->sqlDivisionTable($data_select);
 	
 	$statement = "select * from ".$dataBase;
 
-	$result = mysql_query($statement);
+	$result = $sql->sqlDql($statement);
 	
 	$rows = mysql_affected_rows();
-	
+
 	// 如果不存在数据 则 返回0
 	if(!$rows>0){
 		echo 0;
@@ -49,7 +36,7 @@
 	
 	$c = json_encode($arr);
 	
-	mysql_close($link);
+	$sql->sqlClose();
 	
 	echo $c;
 
