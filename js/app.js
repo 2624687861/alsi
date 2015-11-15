@@ -113,6 +113,60 @@ app.filter('limitToStr2',function(){
 	}
 });
 
+// 页码服务
+app.factory('PageService',function(){
+	
+	var pageService = {};
+
+	// 总页数
+	pageService.createPages = function(num){
+		var arr = [];
+		if(num<=7){
+			for(var i=0;i<num;i++){
+				arr.push(i+1);
+			}
+		}else{
+			arr = [1,2,3,4,5,6,7];
+		}
+		return arr;
+	}
+	// 页数跳转
+	pageService.numPage = function(a,obj2){
+		if(a==obj2.initial){
+			return '';
+		}
+		var iPage = null;
+		switch(a){
+			case 'add':
+				iPage = obj2.initial + 1;
+				if(iPage>obj2.total){
+					return '';
+				}
+			;break;
+			case 'sign':
+				iPage = obj2.initial - 1;
+				if(iPage<1){
+					return '';
+				}
+			;break;
+			case 'jump':
+				iPage = Number(jQuery.trim(jQuery(obj2.sClass).text()));
+				if(iPage>obj2.total||iPage<1){
+					alert('输入值无效.');
+					return '';
+				}
+			;break;
+			default:
+				iPage = a;
+			;break;
+		}
+		return iPage;
+	}
+	
+	
+	return pageService;
+	
+});
 
 
 

@@ -16,7 +16,7 @@ section,aside,article,footer,header,nav,figure {
 a,a:hover,a:visited,a:active,a:link {
 	text-decoration: none;
 }
-a:focus {
+a,div:focus {
 	outline: none;
 }
 
@@ -100,6 +100,10 @@ a:focus {
 }
 .mar_t_10 {
 	margin-top: 10px;
+}
+.mar_tb_20 {
+	margin-top: 40px;
+	margin-bottom: 60px;
 }
 .mar_r_20 {
 	margin-right: 20px;

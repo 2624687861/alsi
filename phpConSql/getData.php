@@ -1,7 +1,8 @@
 <?php
 	// 只有当 php 当作页面使用时 才 添加 <meta charset='utf-8'/> 或者添加头信息.
-	if(isset($_GET['data_select'])){
+	if(isset($_GET['data_select']) && isset($_GET['data_page'])){
 		$data_select = $_GET['data_select'];
+		$data_page = $_GET['data_page'];
 	}else{
 		die('<script>document.write("传输数据方式非法.");</script>;');
 	}
@@ -10,15 +11,21 @@
 	$sql = new SQL();
 	
 	$dataBase = $sql->sqlDivisionTable($data_select);
+	// 第一次 0
+	$data_page_start = $data_page*30;
+	$data_page_end = $data_page_start+30;
+	$statement = 'select * from '.$dataBase.' limit '."$data_page_start,$data_page_end";
+	$stateRows = 'select count(id) from '.$dataBase;
 	
-	$statement = "select * from ".$dataBase;
-
 	$result = $sql->sqlDql($statement);
-	
-	$rows = mysql_affected_rows();
+	$baseRows = $sql->sqlDql($stateRows);
 
+	while($a = mysql_fetch_row($baseRows)){
+		$base_rows = $a[0];
+	}
+	
 	// 如果不存在数据 则 返回0
-	if(!$rows>0){
+	if($base_rows==0){
 		echo 0;
 		mysql_close($link);
 		return '';
@@ -34,7 +41,9 @@
 		$arr[] = $b;
 	}
 	
-	$c = json_encode($arr);
+	$resultArr = array('rows'=>$base_rows,'data'=>$arr);
+	
+	$c = json_encode($resultArr);
 	
 	$sql->sqlClose();
 	

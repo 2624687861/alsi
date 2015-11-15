@@ -61,7 +61,7 @@ ctrl.controller('dataEntryCtrl',function($scope){
 });
 
 // extract entertainment
-ctrl.controller('entertainmentCtrl',function($scope,$routeParams,HttpData){
+ctrl.controller('entertainmentCtrl',function($scope,$routeParams,HttpData,PageService){
 
 	$scope.bill = {};
 	$scope.service = HttpData;
@@ -71,27 +71,43 @@ ctrl.controller('entertainmentCtrl',function($scope,$routeParams,HttpData){
 	$scope.bill.id = $routeParams['id'];    // 4为单词 显示
 	// 显示分支
 	$scope.bill.exists = false;
+	
+	// 页码
+	$scope.page = {
+		'total': 0, // 总页码
+		'arr': null, // 实际分组
+		'initial': 0, // 初始化 页码 0 不存在
+		'sClass': ".page_href",  // 获取跳转页码的class
+		'url': 'phpConSql/getData.php',   // 要发送目标的url地址
+	};
+	
 	// 异步使用参数
 	$scope.bill.url = 'phpConSql/getData.php';
-	$scope.bill.json = {'data_select': $scope.bill.id};
+	$scope.bill.json = {'data_select': $scope.bill.id,'data_page':$scope.page.initial};
 	
+	// 初始化数据 
 	$scope.service.getAnsycData($scope.bill.url,$scope.bill.json)
 	.done(function(res,status,xhr){
 		var a = JSON.parse(res);
-
-		if(!a){
+		if(!a.rows){
 			$scope.bill.exists = true;
 			$scope.$apply();
 			return '';
 		}
 		
-		for(var i in a){
-			a[i].showName = a[i].name;
-			a[i].showContent = a[i].content;
+		var arr = [];
+		for(var i in a.data){
+			var obj1 = {};
+			obj1.id = a.data[i].id;
+			obj1.showName = a.data[i].name;
+			obj1.showContent = a.data[i].content;
+			arr.push(obj1);
 		}
 		
-		$scope.bill.data = a;
+		$scope.bill.data = arr;
 		$scope.bill.exists = false;
+		$scope.page.total = Math.ceil(a.rows/30);
+		$scope.page.initial = 1;
 		$scope.$apply();
 		
 	})
@@ -99,12 +115,50 @@ ctrl.controller('entertainmentCtrl',function($scope,$routeParams,HttpData){
 		alert(errText+':'+errStatus);
 	});
 	
+	// 跳转页数
+	$scope.numPage = function(a){
+		var iPage = PageService.numPage(a,$scope.page);
+		if(!iPage){
+			return '';
+		}
+		$scope.bill.json.data_page = (iPage-1);
+		$scope.service.getAnsycData($scope.bill.url,$scope.bill.json)
+		.done(function(res,status,xhr){
+			var a = JSON.parse(res);
+			
+			var arr = [];
+			for(var i in a.data){
+				var obj1 = {};
+				obj1.id = a.data[i].id;
+				obj1.showName = a.data[i].name;
+				obj1.showContent = a.data[i].content;
+				arr.push(obj1);
+			}
+			
+			$scope.bill.data = arr;
+			$scope.page.initial = iPage;
+			$scope.$apply();
+			
+		})
+		.fail(function(xhr,errText,errStatus){
+			alert(errText+':'+errStatus);
+		});
+	}
+	
 	// 挂 监听
 	$scope.$watch('bill.data',function(newValue,old,scope){
 		$scope.bill.data = newValue;
 	});
 	$scope.$watch('bill.exists',function(newValue,old,scope){
 		$scope.bill.exists = newValue;
+	});
+	$scope.$watch('page.total',function(newValue,old,scope){
+		$scope.page.total = newValue;
+		// 拿到总页码 从而决定显示区域
+		$scope.page.pages = PageService.createPages($scope.page.total);
+	});
+	$scope.$watch('page.initial',function(newValue,old,scope){
+		$scope.page.initial = newValue;
 	});
 	
 });
