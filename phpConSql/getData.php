@@ -13,9 +13,11 @@
 	$dataBase = $sql->sqlDivisionTable($data_select);
 	// 第一次 0
 	$data_page_start = $data_page*30;
-	$data_page_end = $data_page_start+30;
-	$statement = 'select * from '.$dataBase.' limit '."$data_page_start,$data_page_end";
+	$statement = 'select * from '.$dataBase.' limit '."$data_page_start,30";
 	$stateRows = 'select count(id) from '.$dataBase;
+	if($data_page!=0){
+		//die($statement);
+	}
 	
 	$result = $sql->sqlDql($statement);
 	$baseRows = $sql->sqlDql($stateRows);

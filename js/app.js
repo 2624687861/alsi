@@ -118,7 +118,7 @@ app.factory('PageService',function(){
 	
 	var pageService = {};
 
-	// 总页数
+	// 总页数 总页数
 	pageService.createPages = function(num){
 		var arr = [];
 		if(num<=7){
@@ -127,6 +127,23 @@ app.factory('PageService',function(){
 			}
 		}else{
 			arr = [1,2,3,4,5,6,7];
+		}
+		return arr;
+	}
+	// 页数转换  当前页数 对象
+	pageService.changePages = function(num,obj2){
+		var arr = [];
+		if(obj2.total>7){
+			if(num<=4){
+				arr = [1,2,3,4,5,6,7];
+			}else if(num>=obj2.total-3){
+				var t = obj2.total;
+				arr = [t-6,t-5,t-4,t-3,t-2,t-1,t];
+			}else{
+				arr = [num-3,num-2,num-1,num,num+1,num+2,num+3];
+			}
+		}else{
+			arr = pageService.createPages(obj2.total)
 		}
 		return arr;
 	}

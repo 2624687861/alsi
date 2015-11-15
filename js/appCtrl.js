@@ -75,8 +75,8 @@ ctrl.controller('entertainmentCtrl',function($scope,$routeParams,HttpData,PageSe
 	// 页码
 	$scope.page = {
 		'total': 0, // 总页码
-		'arr': null, // 实际分组
-		'initial': 0, // 初始化 页码 0 不存在
+		'pages': null, // 实际分组
+		'initial': 0, // 初始化 页码 1
 		'sClass': ".page_href",  // 获取跳转页码的class
 		'url': 'phpConSql/getData.php',   // 要发送目标的url地址
 	};
@@ -124,8 +124,9 @@ ctrl.controller('entertainmentCtrl',function($scope,$routeParams,HttpData,PageSe
 		$scope.bill.json.data_page = (iPage-1);
 		$scope.service.getAnsycData($scope.bill.url,$scope.bill.json)
 		.done(function(res,status,xhr){
+			console.log(res);
 			var a = JSON.parse(res);
-			
+			console.log(a);
 			var arr = [];
 			for(var i in a.data){
 				var obj1 = {};
@@ -154,11 +155,11 @@ ctrl.controller('entertainmentCtrl',function($scope,$routeParams,HttpData,PageSe
 	});
 	$scope.$watch('page.total',function(newValue,old,scope){
 		$scope.page.total = newValue;
-		// 拿到总页码 从而决定显示区域
-		$scope.page.pages = PageService.createPages($scope.page.total);
 	});
 	$scope.$watch('page.initial',function(newValue,old,scope){
 		$scope.page.initial = newValue;
+		// 拿到新页码 决定显示区域
+		$scope.page.pages = PageService.changePages(newValue,$scope.page);
 	});
 	
 });
