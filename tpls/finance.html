@@ -1,0 +1,94 @@
+
+<div class='container'>
+	
+	<div class='row text-left text-muted fam font_16'>
+		<section class='col-xs-10 col-xs-offset-1'>
+			<table class='table table-hover table-striped table-responsive'>
+				<thead>	
+					<tr>
+						<th>日期</th>
+						<th>明目</th>
+						<th>金额</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- 模板输出 -->
+					<tr ng-repeat='item in bill.aData'>
+						<td ng-bind='item.moDate'></td>
+						<td ng-bind='item.title'></td>
+						<td ng-bind='item.money'></td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<!-- 未定:是否开放分页？ / 不开放 -->
+					
+					<tr class='text-right'>
+						<td></td>
+						<td></td>
+						<td>
+							<a href='javascript:void(0);' ng-click='addData()' class='text-muted'>更多</a>
+							<a href='javascript:void(0);' class='text-muted' go-back>返回</a>
+						</td>
+					</tr>
+				</tfoot>
+			<table>
+		</section>
+	</div>
+	
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<!-- 可能需要的拓展: 图表 -->
+<!--<div id='container' style='width:1200px;height:500px;'></div>
+
+<script>
+		
+	jQuery('#container').highcharts({
+		chart: {
+			'type': 'column',
+		},
+		title: {
+			'text': '财务图表',
+		},
+		xAxis: {
+			title: {
+				'text': '日期',
+			},
+			categories: ['1月','2月']
+		},
+		yAxis: {
+			title: {
+				'text': 'money',
+			}
+		},
+		series: [
+			{
+				'name': 'aa',
+				'data': [12,45]
+			}
+		],
+		credits: {
+			enabled: false,
+		},
+		tooltip: {
+			pointFormatter: function() {
+			    return 'value:'+this.y;
+			}
+		}
+	});
+		
+		
+</script>-->
+
+
+
+

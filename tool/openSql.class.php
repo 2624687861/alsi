@@ -47,6 +47,13 @@
 			$time = date('Y-m-d H:i:s');
 			return $time;
 		}
+		// 获取当前日期
+		function sqlGetCurrentDay(){
+			$time = time();
+			date_default_timezone_set('Asia/Shanghai');
+			$time = date('Y-m-d');
+			return $time;
+		}
 		// 执行dml语句  操作数据语句
 		function sqlDml($sql){
 			$b = mysql_query($sql,$this->link);

@@ -1,0 +1,51 @@
+<!-- 非核心类型 -->
+
+<div class='container fam commerical_wrap'>
+	
+	<form class='form-horizontal' name='add_data' method='get' action='phpConSql/dataEntryNotCore.php'>
+		
+		<div class='form-group form-group-lg'>
+			<label class='sr-only'>分类选项</label>
+			<select class='form-control' name='data_select'>
+				<option value='0'>财务</option>
+			</select>
+			<span class='sr-only'>分类记录选项:待拓展</span>
+		</div>
+		
+		<div class='form-group form-group-lg has-feedback'>
+			<label class='sr-only'>花费的项目</label>
+			<div class='input-group'>
+				<span class='input-group-addon font_18'>
+					<i class='glyphicon glyphicon-edit'></i>
+					明目
+				</span>
+				<input type='text' ng-model='bill.name' class='form-control' name='data_name' placeholder="请输入明目" required="required" maxlength="24" />
+				<span ng-hide='add_data.data_name.$pristine||add_data.data_name.$invalid' class='glyphicon glyphicon-ok text-success form-control-feedback dataEntry_icon' aria-hidden='true'></span>
+				<span ng-hide='add_data.data_name.$pristine||add_data.data_name.$valid' class='glyphicon glyphicon-remove text-danger form-control-feedback dataEntry_icon' aria-hidden='true'></span>
+			</div>
+		</div>
+		
+		<div class='form-group form-group-lg has-feedback'>
+			<label class='sr-only'>花费的金额</label>
+			<div class='input-group'>
+				<span class='input-group-addon font_18'>
+					<i class='glyphicon glyphicon-check'></i>
+					金额
+				</span>
+				<input type='text' ng-keyup='observeNum()' ng-model='bill.number' class='form-control' name='data_number' placeholder="请输入金额" required="required" maxlength="120" />
+				<!-- 可优化:将数字控件的冲突部分修改为一个函数 text类型 监听每次变化 由函数来觉醒是否可用 -->
+				<span ng-hide='add_data.data_number.$pristine||bill.bool' class='glyphicon glyphicon-ok text-success form-control-feedback dataEntry_icon' aria-hidden='true'></span>
+				<span ng-hide='add_data.data_number.$pristine||!bill.bool' class='glyphicon glyphicon-remove text-danger form-control-feedback dataEntry_icon' aria-hidden='true'></span>
+			</div>
+		</div>
+		
+		<div class='form-group text-right'>
+			<label class='sr-only'>确认上传</label>
+			<button type='submit' class='btn btn-default btn-lg' ng-disabled='add_data.$invalid||bill.bool'>录入数据</button>
+		</div>
+		
+	</form>
+	
+</div>
+
+

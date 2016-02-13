@@ -1,0 +1,31 @@
+<!-- 页码 -->
+<div class='row' ng-class='{hide:!page.total||page.total==1}'> 
+
+	<nav class='pagination center_block mar_tb_20'>
+		<li>
+			<a href='javascript:void(0);' hz-a="sign">
+				<span aria-hidden='true'>
+					&laquo;
+				</span>
+			</a>
+		</li>
+		
+		<!-- 数组索引0~15. -->
+		<li ng-repeat='item in page.pages' ng-class='{active:item==page.initial}' >
+			<a href='javascript:void(0);' ng-bind='item' hz-a='{{item}}' ></a>
+		</li>
+		
+		<li>
+			<div class='page_href text-muted text-center' style='float:left;width:50px;height:34px;line-height:32px;border-top:1px rgba(220,220,220,1) solid;border-bottom:1px rgba(220,220,220,1) solid;' ng-bind-template='{{page.initial}}/{{page.total}}' contenteditable="true" ></div>
+			<a href='javascript:void(0)' hz-a="jump">跳转</a>
+		</li>
+		<li>
+			<a href='javascript:void(0)' hz-a="add">
+				<span aria-hidden='true'>
+					&raquo;
+				</span>
+			</a>
+		</li>
+	</nav>
+
+</div>

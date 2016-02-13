@@ -33,6 +33,16 @@ app.config(function($routeProvider){
 		templateUrl: 'tpls/searchResult.html',
 		controller: 'searchResultCtrl'
 		
+	}).when('/finance',{
+		
+		templateUrl: 'tpls/finance.html',
+		controller: 'financeCtrl'
+		
+	}).when('/addCommercial',{
+		
+		templateUrl: 'tpls/commercial.html',
+		controller: 'commercialCtrl'
+		
 	}).otherwise({
 		
 		redirectTo: '/'

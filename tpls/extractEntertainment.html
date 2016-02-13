@@ -17,6 +17,7 @@
 	</div>
 	
 	<!-- 页码 -->
+	<!--<hz ng-model='page'>aaaa</hz>-->
 	<div class='row' ng-class='{hide:!page.total||page.total==1}'> 
 	
 		<nav class='pagination center_block mar_tb_20'>
@@ -28,7 +29,6 @@
 				</a>
 			</li>
 			
-			<!-- 数组索引0~15. -->
 			<li ng-repeat='item in page.pages' ng-class='{active:item==page.initial}' >
 				<a href='javascript:void(0);' ng-bind='item' ng-click='numPage(item)' ></a>
 			</li>

@@ -345,6 +345,116 @@ ctrl.controller('searchResultCtrl',function($scope,HttpData){
 	
 });
 
+// finance
+ctrl.controller('financeCtrl',function($scope,HttpData){
+	
+	$scope.bill = {
+		'row': null,									// 一共有多少条数据
+		'aData': [],
+		'data_page': 0,
+	};
+	
+	
+	// 有待 优化 getData / addData 合并公共部分
+	$scope.getData = function(){
+		
+		$scope.fnData();
+		
+	}
+	
+	$scope.addData = function(){
+		++$scope.bill.data_page;
+		
+		$scope.fnData();
+		
+	}
+	
+	$scope.fnData = function(){
+		
+		var url = "phpConSql/getDataNotCore.php",
+		json = {"data_page":$scope.bill.data_page,"data_select":0};
+		var a = HttpData.getAnsycData(url,json)
+		a.done(function(res,status,xhr){
+			var c = JSON.parse(res);
+			$scope.bill.row = c.rows;
+			
+			if(c.data.length==0){
+				alert('没有数据了');
+				return '';
+			}
+			
+			for(var i in c.data){
+				$scope.bill.aData.push(c.data[i]);
+			}
+
+			$scope.$apply($scope.bill.aData);
+		})
+		.fail(function(xhr,errorText,errorStatus){
+			console.log(errorText,errorStatus);
+		});
+		
+	}
+	
+	$scope.getData();
+	
+//  挂监听                                                 
+//	$scope.$watch('bill.aData',function(n,o,scope){
+//		$scope.bill.aData = n;
+//	});
+	
+	// $watch 监听针对的是$scope下的数据模型发生变化，从而产生的大规模数据计算变化，监听数据模型,回调执行函数,进行其他运算
+	// $apply 强制针对指令中没有及时更新的相对数据的视图，异步没能及时更新的相对数据的视图,强制刷新一次数据模型相对的视图
+	
+});
+
+// commercial
+ctrl.controller('commercialCtrl',function($scope){
+	
+	$scope.bill = {};
+	
+	$scope.bill.name = null;
+	$scope.bill.number = null;
+	
+	$scope.bill.bool = null;
+	
+	//  不基于 message add_data.data_number.$pristine||add_data.data_number.$valid 手动判定
+	$scope.observeNum = function(){
+		var reg = /\d+/;
+		if(reg.test($scope.bill.number)&&$scope.bill.number>0){
+			$scope.bill.bool =  false;
+		}else{
+			$scope.bill.bool =  true;
+		}
+	}
+	
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

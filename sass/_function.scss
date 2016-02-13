@@ -1,0 +1,13 @@
+/* function */
+
+@function float($float:left){
+    @if $float == left{
+        @return left;
+    }@else {
+        @return right;
+    }
+}
+
+
+
+

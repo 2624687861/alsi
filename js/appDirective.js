@@ -439,5 +439,149 @@ ctrl.directive('goBack',function(){
 });
 
 
+// 指令
+
+//html块,函数过程,基类指令做拓展.  参数
+ctrl.directive('hz',function(){
+	return {
+		restrict: 'E',
+		require: '^ngModel',
+		scope: {
+			page: '=ngModel',
+		},
+		controller: function($scope){
+			this.numPage = function(a,obj2){
+				if(a==obj2.initial){
+					return '';
+				}
+				var iPage = null;
+				switch(a){
+					case 'add':
+						iPage = obj2.initial + 1;
+						if(iPage>obj2.total){
+							return '';
+						}
+					;break;
+					case 'sign':
+						iPage = obj2.initial - 1;
+						if(iPage<1){
+							return '';
+						}
+					;break;
+					case 'jump':
+						iPage = Number(jQuery.trim(jQuery(obj2.sClass).text()));
+						if(iPage>obj2.total||iPage<1){
+							alert('输入值无效.');
+							return '';
+						}
+					;break;
+					default:
+						iPage = a;
+					;break;
+				}
+				return iPage;
+			};
+			/* 这部分 重写.
+			this.numPage2 = function(a){
+				if(!iPage){
+					return '';
+				}
+				$scope.bill.json.data_page = (iPage-1);
+				$scope.service.getAnsycData($scope.bill.url,$scope.bill.json)
+				.done(function(res,status,xhr){
+					var a = JSON.parse(res);
+					var arr = [];
+					for(var i in a.data){
+						var obj1 = {};
+						obj1.id = a.data[i].id;
+						obj1.showName = a.data[i].name;
+						obj1.showContent = a.data[i].content;
+						arr.push(obj1);
+					}
+					
+					$scope.bill.data = arr;
+					$scope.page.initial = iPage;
+					$scope.$apply();
+					
+				})
+				.fail(function(xhr,errText,errStatus){
+					alert(errText+':'+errStatus);
+				});
+			}*/
+		},
+		replace: false,
+		templateUrl:"module_directive/hz_pagation.html",
+	}
+});
+ctrl.directive('hzA',function(){
+	return {
+		restrict: 'A',
+		require: '^hz',
+		link: function(scope,ele,attrs,hzCtrl){
+			jQuery(ele).on('click',function(){
+				var a = attrs['hzA'];
+				var b = hzCtrl.numPage(a,scope.page);
+				//hzCtrl.numPage2(b);  重写区域
+			});
+		}
+	}
+});
+
+/*
+ctrl.directive('hz',function(){
+	return {
+		restrict: 'E',
+		scope: {},
+		controller: function($scope){
+			// 得到要向后台发送的页码
+			$scope.numPage = function(a,obj2){
+				if(a==obj2.initial){
+					return '';
+				}
+				var iPage = null;
+				switch(a){
+					case 'add':
+						iPage = obj2.initial + 1;
+						if(iPage>obj2.total){
+							return '';
+						}
+					;break;
+					case 'sign':
+						iPage = obj2.initial - 1;
+						if(iPage<1){
+							return '';
+						}
+					;break;
+					case 'jump':
+						iPage = Number(jQuery.trim(jQuery(obj2.sClass).text()));
+						if(iPage>obj2.total||iPage<1){
+							alert('输入值无效.');
+							return '';
+						}
+					;break;
+					default:
+						iPage = a;
+					;break;
+				}
+				return iPage;
+			};
+		},
+		templateUrl: 'module_directive/hz_pagation.html',
+		replace: true,
+	}
+});
+ctrl.directive('hz-pagation',function(){
+	return {
+		restrict: 'A',
+		require: '^hz',
+		link: function(scope,ele,attrs,hz){
+			
+		}
+	}
+});*/
+
+
+
+
 
 
